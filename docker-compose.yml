@@ -1,0 +1,112 @@
+version: '3.1'
+
+services:
+  vnc_1:
+    container_name: vnc_1
+    build:
+      context: ./
+      dockerfile: docker/vnc/Dockerfile
+      args:
+        - http_proxy
+        - https_proxy
+        - no_proxy
+    ports:
+      - "1:5901"
+    restart: always   
+
+  vnc_2:
+    container_name: vnc_2
+    build:
+      context: ./
+      dockerfile: docker/vnc/Dockerfile
+      args:
+        - http_proxy
+        - https_proxy
+        - no_proxy
+    ports:
+      - "2:5901"
+    restart: always 
+
+  jenkins:
+    container_name: jenkins
+    build:
+      context: ./docker/jenkins
+      dockerfile: ./Dockerfile
+      args:
+        - http_proxy
+        - https_proxy
+        - no_proxy
+    ports:
+      - "8080:8080"
+    volumes:
+      - jenkins_jobs:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+
+  hubot:
+    container_name: hubot
+    build:
+      context: ./docker/hubot
+      dockerfile: ./Dockerfile
+      args:
+        - http_proxy
+        - https_proxy
+        - no_proxy
+    env_file:
+      - ./docker/hubot/hubot.env
+    restart: always
+
+  elasticsearch:
+    container_name: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.2.3
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+      cluster.name: "docker-cluster"
+      network.host: 0.0.0.0
+      discovery.zen.minimum_master_nodes: 1
+      discovery.type: single-node
+    networks:
+      - elk
+    restart: always
+
+  logstash:
+    container_name: logstash
+    build:
+      context: ./docker/elk
+      dockerfile: ./logstash/Dockerfile
+    volumes:
+      - ./docker/elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./docker/elk/logstash/pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      - "5000:5000"
+    environment:
+      LS_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+    restart: always
+
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana-oss:6.2.3
+    environment:
+      SERVER_NAME: kibana
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+    restart: always
+
+networks:
+  elk:
+    driver: bridge
+
+volumes:
+  jenkins_jobs:  
