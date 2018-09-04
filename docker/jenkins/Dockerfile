@@ -1,8 +1,8 @@
 FROM jenkins/jenkins:2.107.2-alpine
 
-ENV http_proxy=${http_proxy} \
-    https_proxy=${https_proxy} \
-    no_proxy="${no_proxy}"
+#ENV http_proxy=${http_proxy} \
+#    https_proxy=${https_proxy} \
+#    no_proxy="${no_proxy}"
 
 RUN echo 2.73.3 > /usr/share/jenkins/ref/jenkins.install.UpgradeWizard.state && \
     echo 2.73.3 > /usr/share/jenkins/ref/jenkins.install.InstallUtil.lastExecVersion
