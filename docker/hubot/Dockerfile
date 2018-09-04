@@ -1,9 +1,9 @@
 # Downloading minimal nodejs image
 FROM node:alpine
 
-ENV http_proxy=${http_proxy} \
-    https_proxy=${https_proxy} \
-    no_proxy="${no_proxy}"
+#ENV http_proxy=${http_proxy} \
+#    https_proxy=${https_proxy} \
+#    no_proxy="${no_proxy}"
 
 # Proxy set up for NPM
 RUN if [ ! -z "${http_proxy}" ]; then \
