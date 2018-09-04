@@ -9,7 +9,7 @@ RUN echo 2.73.3 > /usr/share/jenkins/ref/jenkins.install.UpgradeWizard.state && 
 
 USER root
 
-ENV GLIBC 2.23-r3
+ENV GLIBC 2.28-r0
 
 # Fix for avoiding docker-compose installation via pip
 RUN apk add --no-cache wget && \
