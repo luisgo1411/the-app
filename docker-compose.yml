@@ -11,21 +11,8 @@ services:
         - https_proxy
         - no_proxy
     ports:
-      - "1:5901"
+      - "80:6901"
     restart: always   
-
-  vnc_2:
-    container_name: vnc_2
-    build:
-      context: ./
-      dockerfile: docker/vnc/Dockerfile
-      args:
-        - http_proxy
-        - https_proxy
-        - no_proxy
-    ports:
-      - "2:5901"
-    restart: always 
 
   jenkins:
     container_name: jenkins
